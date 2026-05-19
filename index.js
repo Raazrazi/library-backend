@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import basicAuth from 'express-basic-auth';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import Book from './models/Book.js';
@@ -12,6 +13,11 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+app.use(basicAuth({
+    users: { 'libuser': 'libpass' }, // Change your credentials safely here
+    unauthorizedResponse: { message: 'Access Denied: Invalid Credentials' }
+}));
 
 const MONGODB_URI = process.env.MONGODB_URI;
 let useInMemory = false;
