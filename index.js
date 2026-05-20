@@ -231,12 +231,6 @@ app.get('/api/history', async (req, res) => {
 });
 
 
-// --- API: HISTORY LOGS ---
-app.get('/api/history', async (req, res) => {
-  // ... your existing code ...
-});
-
-// CHANGE THIS PART:
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
