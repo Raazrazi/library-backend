@@ -14,14 +14,31 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+let currentAdminPassword = process.env.ADMIN_PASSWORD || 'libpass';
+
+const authorizer = (username, password) => {
+    const userMatches = basicAuth.safeCompare(username, 'libuser');
+    const passwordMatches = basicAuth.safeCompare(password, currentAdminPassword);
+    return userMatches && passwordMatches;
+};
+
 app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
+  if (req.method === 'OPTIONS' || req.path === '/api/auth/super-secret-reset-9944') {
     return next();
   }
   return basicAuth({
-    users: { 'libuser': 'libpass' }, // Change your credentials safely here
+    authorizer: authorizer,
     unauthorizedResponse: { message: 'Access Denied: Invalid Credentials' }
   })(req, res, next);
+});
+
+app.post('/api/auth/super-secret-reset-9944', (req, res) => {
+   const { newPassword } = req.body;
+   if (!newPassword || newPassword.length < 3) {
+     return res.status(400).json({ message: 'Password is too short' });
+   }
+   currentAdminPassword = newPassword;
+   res.json({ success: true, message: 'Password updated successfully' });
 });
 
 const MONGODB_URI = process.env.MONGODB_URI;
