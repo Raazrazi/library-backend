@@ -14,10 +14,15 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-app.use(basicAuth({
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+  return basicAuth({
     users: { 'libuser': 'libpass' }, // Change your credentials safely here
     unauthorizedResponse: { message: 'Access Denied: Invalid Credentials' }
-}));
+  })(req, res, next);
+});
 
 const MONGODB_URI = process.env.MONGODB_URI;
 let useInMemory = false;
